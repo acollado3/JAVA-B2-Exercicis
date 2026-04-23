@@ -1,8 +1,10 @@
-﻿package edu.uoc.b2.tema1.ex03;
+package edu.uoc.b2.tema1.ex03;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ============================================================
@@ -35,7 +37,11 @@ public class ProcesadorProductos {
     public static List<Producto> activos(List<Producto> productos) {
         // [ES]  TODO — filter(activo) + sorted por precio + collect
         // [CAT] TODO — filter(actiu) + sorted per preu + collect
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .filter(Producto::activo)
+                .sorted((p1, p2) -> Double.compare(p1.precio, p2.precio))
+                .toList();
     }
 
     /**
@@ -45,7 +51,12 @@ public class ProcesadorProductos {
     public static List<String> nombresPorCategoria(List<Producto> productos, String categoria) {
         // [ES]  TODO — filter por categoria + map a nombre + sorted + collect
         // [CAT] TODO — filter per categoria + map a nom + sorted + collect
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .filter(p -> p.categoria.equals(categoria))
+                .map(Producto::nombre)
+                .sorted()
+                .toList();
     }
 
     /**
@@ -55,7 +66,11 @@ public class ProcesadorProductos {
     public static double totalFacturacion(List<Producto> productos) {
         // [ES]  TODO — filter actiu + mapToDouble(p -> p.precio() * p.stock()) + sum()
         // [CAT] TODO — filter actiu + mapToDouble(p -> p.preu() * p.estoc()) + sum()
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .filter(Producto::activo)
+                .mapToDouble(p -> p.precio * p.stock)
+                .sum();
     }
 
     /**
@@ -67,7 +82,10 @@ public class ProcesadorProductos {
     public static Optional<Producto> productoMasCaro(List<Producto> productos) {
         // [ES]  TODO — filter actiu + max(Comparator.comparingDouble(Producto::precio))
         // [CAT] TODO — filter actiu + max(Comparator.comparingDouble(Producte::preu))
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .filter(Producto::activo)
+                .max(Comparator.comparingDouble(Producto::precio));
     }
 
     /**
@@ -79,7 +97,9 @@ public class ProcesadorProductos {
     public static Map<String, Long> contarPorCategoria(List<Producto> productos) {
         // [ES]  TODO — collect(Collectors.groupingBy(Producto::categoria, Collectors.counting()))
         // [CAT] TODO — collect(Collectors.groupingBy(Producte::categoria, Collectors.counting()))
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .collect(Collectors.groupingBy(Producto::categoria, Collectors.counting()));
     }
 
     /**
@@ -91,7 +111,13 @@ public class ProcesadorProductos {
     public static double precioMedio(List<Producto> productos, String categoria) {
         // [ES]  TODO — filter activo + filter categoria + mapToDouble(precio) + average() + orElse(0.0)
         // [CAT] TODO — filter actiu + filter categoria + mapToDouble(preu) + average() + orElse(0.0)
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .filter(Producto::activo)
+                .filter(p -> p.categoria.equals(categoria))
+                .mapToDouble(Producto::precio)
+                .average()
+                .orElse(0.0);
     }
 
     /**
@@ -101,7 +127,11 @@ public class ProcesadorProductos {
     public static boolean hayStockBajo(List<Producto> productos, int minim) {
         // [ES]  TODO — filter activo + anyMatch(p -> p.stock() < minim)
         // [CAT] TODO — filter actiu + anyMatch(p -> p.estoc() < minim)
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream()
+                .filter(Producto::activo)
+                .anyMatch(p -> p.stock < minim);
+
     }
 
     /**
@@ -113,6 +143,11 @@ public class ProcesadorProductos {
     public static List<Producto> filtrarPorStock(List<Producto> productos, int minim, int maxim) {
         // [ES]  TODO — filter activo + filter stock BETWEEN + sorted + collect
         // [CAT] TODO — filter actiu + filter estoc BETWEEN + sorted + collect
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return productos.stream().
+                filter(Producto::activo)
+                .filter(p -> p.stock >= minim && p.stock <= maxim)
+                .sorted(Comparator.comparingInt(p -> p.stock))
+                .collect(Collectors.toList());
     }
 }
