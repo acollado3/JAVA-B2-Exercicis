@@ -1,4 +1,4 @@
-﻿package edu.uoc.b2.tema1.ex04;
+package edu.uoc.b2.tema1.ex04;
 
 import java.util.Optional;
 
@@ -41,7 +41,8 @@ public class GestorUsuarios {
     public static Optional<Usuario> buscarPorId(java.util.List<Usuario> usuarios, int id) {
         // [ES]  TODO — stream().filter(u -> u.id() == id).findFirst()
         // [CAT] TODO — stream().filter(u -> u.id() == id).findFirst()
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return usuarios.stream().filter(u -> u.id() == id).findFirst();
     }
 
     /**
@@ -51,7 +52,9 @@ public class GestorUsuarios {
     public static Optional<String> getTelefono(Usuario usuario) {
         // [ES]  TODO — Optional.ofNullable(usuario.telefono())
         // [CAT] TODO — Optional.ofNullable(usuari.telefon())
-        throw new UnsupportedOperationException("TODO");
+        // throw new UnsupportedOperationException("TODO");
+        return Optional.ofNullable(usuario.telefono());
+
     }
 
     /**
@@ -61,7 +64,8 @@ public class GestorUsuarios {
     public static String getCiudad(Usuario usuario) {
         // [ES]  TODO — Optional.ofNullable(usuario.direccion()).map(Direccion::ciudad).orElse("Desconocida")
         // [CAT] TODO — Optional.ofNullable(usuari.adreca()).map(Adreca::ciutat).orElse("Desconeguda")
-        throw new UnsupportedOperationException("TODO");
+        // throw new UnsupportedOperationException("TODO");
+        return Optional.ofNullable(usuario.direccion()).map(Direccion::ciudad).orElse("Desconocida");
     }
 
     /**
@@ -71,7 +75,8 @@ public class GestorUsuarios {
     public static double calcularPrecioFinal(Usuario usuario, double precio) {
         // [ES]  TODO — Optional.ofNullable(usuario.descuento()).orElse(0.0) → aplica la fórmula
         // [CAT] TODO — Optional.ofNullable(usuari.descompte()).orElse(0.0) → aplica la fórmula
-        throw new UnsupportedOperationException("TODO");
+        // throw new UnsupportedOperationException("TODO");
+        return (1.0 - (Optional.ofNullable(usuario.descuento()).orElse(0.0))) * precio;
     }
 
     /**
@@ -81,7 +86,12 @@ public class GestorUsuarios {
     public static String nombrePorEmail(java.util.List<Usuario> usuarios, String email) {
         // [ES]  TODO — buscar por email + .map(Usuario::nombre) + .orElseThrow(...)
         // [CAT] TODO — cercar per email + .map(Usuari::nom) + .orElseThrow(...)
-        throw new UnsupportedOperationException("TODO");
+        // throw new UnsupportedOperationException("TODO");
+        return usuarios.stream()
+                .filter(u -> u.email().equalsIgnoreCase(email))
+                .findFirst()
+                .map(Usuario::nombre)
+                .orElseThrow(() -> new java.util.NoSuchElementException("No se encontró ningún usuario con el email: " + email));
     }
 
     /**
@@ -91,6 +101,9 @@ public class GestorUsuarios {
     public static Optional<Usuario> primeroConDescuento(java.util.List<Usuario> usuarios) {
         // [ES]  TODO — stream().filter(u -> u.descuento() != null && u.descuento() > 0).findFirst()
         // [CAT] TODO — stream().filter(u -> u.descompte() != null && u.descompte() > 0).findFirst()
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return usuarios.stream()
+                .filter(u -> u.descuento() != null && u.descuento() > 0)
+                .findFirst();
     }
 }
