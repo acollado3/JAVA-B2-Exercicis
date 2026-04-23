@@ -1,5 +1,7 @@
-﻿package edu.uoc.b2.tema1.ex05;
+package edu.uoc.b2.tema1.ex05;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -58,11 +60,13 @@ public class SistemaNotificaciones {
         private final String nombre;
         // [ES]  TODO — Declara una List<Suscriptor> privada para almacenar los suscriptores
         // [CAT] TODO — Declara una List<Suscriptor> privada per emmagatzemar els subscriptors
+        private final List<Suscriptor> suscriptores;
 
         public CanalNotificacion(String nombre) {
             this.nombre = nombre;
             // [ES]  TODO — inicializa la lista de suscriptores (new ArrayList<>())
             // [CAT] TODO — inicialitza la llista de subscriptors (new ArrayList<>())
+            this.suscriptores = new ArrayList<>();
         }
 
         public String getNombre() {
@@ -76,7 +80,10 @@ public class SistemaNotificaciones {
         public void suscribir(Suscriptor suscriptor) {
             // [ES]  TODO — añade a la lista si no está ya (usa !suscriptores.contains(...))
             // [CAT] TODO — afegeix a la llista si no hi és ja (usa !suscriptores.contains(...))
-            throw new UnsupportedOperationException("TODO");
+            // throw new UnsupportedOperationException("TODO");
+            if (suscriptor != null && !suscriptores.contains(suscriptor)) {
+                suscriptores.add(suscriptor);
+            }
         }
 
         /**
@@ -86,7 +93,8 @@ public class SistemaNotificaciones {
         public void desvincular(Suscriptor suscriptor) {
             // [ES]  TODO — elimina de la lista
             // [CAT] TODO — elimina de la llista
-            throw new UnsupportedOperationException("TODO");
+            //throw new UnsupportedOperationException("TODO");
+            suscriptores.remove(suscriptor);
         }
 
         /**
@@ -100,7 +108,12 @@ public class SistemaNotificaciones {
         public void publicar(String mensaje) {
             // [ES]  TODO — itera suscriptores y llama recibir("[" + nombre + "] " + mensaje)
             // [CAT] TODO — itera subscriptors i crida recibir("[" + nombre + "] " + mensaje)
-            throw new UnsupportedOperationException("TODO");
+            //throw new UnsupportedOperationException("TODO");
+            String mensajeFormatejat = "[" + nombre + "] " + mensaje;
+            // Iterem sobre la llista per notificar a cadascú
+            for (Suscriptor s : suscriptores) {
+                s.recibir(mensajeFormatejat);
+            }
         }
 
         /**
@@ -110,7 +123,8 @@ public class SistemaNotificaciones {
         public int numeroSuscriptores() {
             // [ES]  TODO — devuelve el tamaño de la lista
             // [CAT] TODO — retorna la mida de la llista
-            throw new UnsupportedOperationException("TODO");
+            // throw new UnsupportedOperationException("TODO");
+            return suscriptores.size();
         }
     }
 
@@ -122,12 +136,13 @@ public class SistemaNotificaciones {
 
         // [ES]  TODO — Declara una List<String> privada para guardar los mensajes recibidos
         // [CAT] TODO — Declara una List<String> privada per guardar els missatges rebuts
-
+        private final List<String> mensajesRecibidos = new ArrayList<>();
         @Override
         public void recibir(String mensaje) {
             // [ES]  TODO — añade el mensaje a la lista
             // [CAT] TODO — afegeix el missatge a la llista
-            throw new UnsupportedOperationException("TODO");
+            //throw new UnsupportedOperationException("TODO");
+            mensajesRecibidos.add(mensaje);
         }
 
         /**
@@ -137,7 +152,8 @@ public class SistemaNotificaciones {
         public List<String> getMensajesRecibidos() {
             // [ES]  TODO — devuelve una copia defensiva de la lista (Pista: Collections.unmodifiableList(...))
             // [CAT] TODO — retorna una còpia defensiva de la llista (Pista/Consell: Collections.unmodifiableList(...))
-            throw new UnsupportedOperationException("TODO");
+            // throw new UnsupportedOperationException("TODO");
+            return Collections.unmodifiableList(mensajesRecibidos);
         }
 
         /**
@@ -147,7 +163,8 @@ public class SistemaNotificaciones {
         public int contarMensajes() {
             // [ES]  TODO
             // [CAT] TODO
-            throw new UnsupportedOperationException("TODO");
+            //throw new UnsupportedOperationException("TODO");
+            return mensajesRecibidos.size();
         }
     }
 
@@ -160,6 +177,7 @@ public class SistemaNotificaciones {
         private final String direccion;
         // [ES]  TODO — List<String> para guardar los emails enviados
         // [CAT] TODO — List<String> per guardar els emails enviats
+        private final List<String> emailsEnviados= new ArrayList<>();
 
         public EmailSuscriptor(String direccion) {
             this.direccion = direccion;
@@ -175,13 +193,15 @@ public class SistemaNotificaciones {
         public void recibir(String mensaje) {
             // [ES]  TODO — guarda en la lista un String del formato: "To: " + direccion + " | " + mensaje
             // [CAT] TODO — guarda a la llista un String del format: "To: " + direccion + " | " + mensaje
-            throw new UnsupportedOperationException("TODO");
+            // throw new UnsupportedOperationException("TODO");
+            emailsEnviados.add("To: " + direccion + " | " + mensaje);
         }
 
         public List<String> getEmailsEnviados() {
             // [ES]  TODO — devuelve la lista (copia defensiva)
             // [CAT] TODO — retorna la llista (còpia defensiva)
-            throw new UnsupportedOperationException("TODO");
+            //throw new UnsupportedOperationException("TODO");
+            return Collections.unmodifiableList(emailsEnviados);
         }
     }
 
@@ -195,18 +215,25 @@ public class SistemaNotificaciones {
 
         // [ES]  TODO — campo 'filtro: String' (palabra clave) y 'destino: Suscriptor' (suscriptor al que reenvía)
         // [CAT] TODO — camp 'filtro: String' (paraula clau) i 'destino: Suscriptor' (subscriptor al qual reenvia)
-
+        private final String filtro;
+        private final Suscriptor destino;
         public FiltroSuscriptor(String filtro, Suscriptor destino) {
             // [ES]  TODO — inicializa campos
             // [CAT] TODO — inicialitza camps
-            throw new UnsupportedOperationException("TODO");
+            this.destino=destino;
+            this.filtro=filtro;
+            //throw new UnsupportedOperationException("TODO");
         }
 
         @Override
         public void recibir(String mensaje) {
             // [ES]  TODO — si mensaje.toLowerCase().contains(filtro.toLowerCase()) → destino.recibir(mensaje)
             // [CAT] TODO — si mensaje.toLowerCase().contains(filtro.toLowerCase()) → destino.recibir(mensaje)
-            throw new UnsupportedOperationException("TODO");
+            //throw new UnsupportedOperationException("TODO");
+            if(mensaje.toLowerCase().contains(filtro.toLowerCase()))
+            {
+                destino.recibir(mensaje);
+            }
         }
     }
 }
