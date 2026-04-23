@@ -1,4 +1,4 @@
-﻿package edu.uoc.b2.tema3;
+package edu.uoc.b2.tema3;
 
 import org.junit.jupiter.api.*;
 import java.sql.*;
