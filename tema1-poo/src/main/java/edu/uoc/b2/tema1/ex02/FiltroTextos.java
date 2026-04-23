@@ -1,4 +1,4 @@
-﻿package edu.uoc.b2.tema1.ex02;
+package edu.uoc.b2.tema1.ex02;
 
 import java.util.List;
 import java.util.function.Function;
@@ -30,20 +30,28 @@ public class FiltroTextos {
      * Ejemplo / Exemple: predicadoLongitudMinima(5).test("hola") → false (4 < 5)
      * predicadoLongitudMinima(5).test("hola!") → true (5 >= 5)
      */
-    public static Predicate<String> predicadoLongitudMinima(int longMin) {
-        // [ES]  TODO — Devuelve una lambda que comprueba si s.length() >= longMin
-        // [CAT] TODO — Retorna una lambda que comprova si s.length() >= longMin
-        throw new UnsupportedOperationException("TODO");
+    public static Predicate<String> predicadoLongitudMinima(int longMin)
+    // [ES]  TODO — Devuelve una lambda que comprueba si s.length() >= longMin
+    // [CAT] TODO — Retorna una lambda que comprova si s.length() >= longMin
+
+    {
+        return s -> s.length() >= longMin;
+        //  throw new UnsupportedOperationException("TODO");
     }
 
     /**
      * [CAT] Retorna un Predicate que és cert si el text comença per {@code prefix} (case-insensitive).
      * [ES]  Devuelve un Predicate que es cierto si el texto empieza por {@code prefix} (case-insensitive).
      */
+
     public static Predicate<String> predicadoEmpiezaPor(String prefix) {
         // [ES]  TODO — Devuelve una lambda que comprueba si s.toLowerCase().startsWith(prefix.toLowerCase())
         // [CAT] TODO — Retorna una lambda que comprova si s.toLowerCase().startsWith(prefix.toLowerCase())
-        throw new UnsupportedOperationException("TODO");
+
+
+
+        return s -> s.toLowerCase().startsWith(prefix.toLowerCase());
+        // throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -53,7 +61,8 @@ public class FiltroTextos {
     public static Function<String, String> transformadorNormalizar() {
         // [ES]  TODO — Devuelve: s -> s.trim().toUpperCase()
         // [CAT] TODO — Retorna: s -> s.trim().toUpperCase()
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return s -> s.trim().toUpperCase();
     }
 
     /**
@@ -72,7 +81,8 @@ public class FiltroTextos {
     public static List<String> filtrar(List<String> textos, Predicate<String> predicado) {
         // [ES]  TODO — Usa stream().filter(predicado).collect(...)
         // [CAT] TODO — Usa stream().filter(predicat).collect(...)
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return textos.stream().filter(predicado).toList();
     }
 
     /**
@@ -87,7 +97,8 @@ public class FiltroTextos {
     public static List<String> transformar(List<String> textos, Function<String, String> funcion) {
         // [ES]  TODO — Usa stream().map(funcion).collect(...)
         // [CAT] TODO — Usa stream().map(funcio).collect(...)
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return textos.stream().map(funcion).toList();
     }
 
     /**
@@ -107,19 +118,21 @@ public class FiltroTextos {
             Function<String, String> funcion) {
         // [ES]  TODO — Encadena filter + map en una sola pipeline de Streams
         // [CAT] TODO — Encadena filter + map en una sola pipeline de Streams
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
+        return textos.stream().filter(predicado).map(funcion).toList();
     }
 
     /**
      * [CAT] Combina dos predicats amb AND. Un text passa el filtre si compleix TOTS DOS.
      *       NOTA: no uses && dins d'una lambda — usa el mètode .and() de Predicate.
-     * 
+     *
      * [ES]  Combina dos predicados con AND. Un texto pasa el filtro si cumple AMBOS.
      *       NOTA: no uses && dentro de una lambda — usa el método .and() de Predicate.
      */
     public static Predicate<String> combinarAnd(Predicate<String> p1, Predicate<String> p2) {
         // [ES]  TODO — Devuelve p1.and(p2)
         // [CAT] TODO — Retorna p1.and(p2)
-        throw new UnsupportedOperationException("TODO");
+        // throw new UnsupportedOperationException("TODO");
+        return p1.and(p2);
     }
 }
