@@ -29,7 +29,17 @@ public class ConsultasSQL {
         // a Z.
         // — Després, usa PreparedStatement i ResultSet per omplir i retornar una
         // List<String>.
-        throw new UnsupportedOperationException("TODO");
+        List<String> nombresClientes = new ArrayList<>();
+        String sql = "SELECT nom FROM clients ORDER BY nom ASC";
+        try(PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+            while(rs.next()) {
+                nombresClientes.add(rs.getString("nom"));
+            }
+        }
+        return nombresClientes;
+
+       // throw new UnsupportedOperationException("TODO");
     }
 
     public static int ex1_totalProductos(Connection conn) throws SQLException {
@@ -39,7 +49,19 @@ public class ConsultasSQL {
         // [CAT] TODO — Compta quants registres complets (COUNT(*)) hi ha a la taula
         // 'productes'.
         // — Retorna aquest nombre com un int.
-        throw new UnsupportedOperationException("TODO");
+        int totalproductos;
+        String sql="SELECT COUNT(*) FROM productes";
+        try(PreparedStatement ps = conn.prepareStatement(sql);) {
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next()) {
+                    totalproductos = rs.getInt(1);
+                } else {
+                    totalproductos = 0;
+                }
+            }
+        }
+        return totalproductos;
+        //throw new UnsupportedOperationException("TODO");
     }
 
     public static List<String> ex2_productosPorCategoria(Connection conn, String categoria) throws SQLException {
@@ -51,7 +73,18 @@ public class ConsultasSQL {
         // específica,
         // ordenats per preu descendentment.
         // — Passa el paràmetre 'categoria' al PreparedStatement i extreu la llista.
-        throw new UnsupportedOperationException("TODO");
+        List<String> productosPorCategoria = new ArrayList<>();
+        String sql = "SELECT nom FROM productes WHERE categoria = ? ORDER BY preu DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            ps.setString(1, categoria);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    productosPorCategoria.add(rs.getString("nom"));
+                }
+                return productosPorCategoria;
+                //throw new UnsupportedOperationException("TODO");
+            }
+        }
     }
 
     public static List<String> ex2_topNProductos(Connection conn, int n) throws SQLException {
@@ -61,7 +94,18 @@ public class ConsultasSQL {
         // [CAT] TODO — Obtén els noms dels N productes més cars (usa ORDER BY i LIMIT
         // ?).
         // — Aplica el paràmetre N i retorna el llistat.
-        throw new UnsupportedOperationException("TODO");
+        List<String> productosMasCaros = new ArrayList<>();
+        String sql = "SELECT nom FROM productes ORDER BY preu DESC LIMIT ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            ps.setInt(1, n);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    productosMasCaros.add(rs.getString("nom"));
+                }
+                return productosMasCaros;
+                //throw new UnsupportedOperationException("TODO");
+            }
+        }
     }
 
     public static List<String> ex2_clientesPorSegmentoYPais(Connection conn, String segmento, String pais)
@@ -72,7 +116,20 @@ public class ConsultasSQL {
         // [CAT] TODO — Obtén el 'nom' de clients d'un 'segment' i un 'pais' específics,
         // ordenat per 'nom'.
         // — Utilitza dos paràmetres en el teu PreparedStatement.
-        throw new UnsupportedOperationException("TODO");
+        List<String> clientesFiltrados = new ArrayList<>();
+        String sql = "SELECT nom FROM clients WHERE segment = ? AND pais = ? ORDER BY nom ASC";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            ps.setString(1, segmento);
+            ps.setString(2, pais);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    clientesFiltrados.add(rs.getString("nom"));
+                }
+                return clientesFiltrados;
+
+            }
+        }
+       // throw new UnsupportedOperationException("TODO");
     }
 
     public static Map<String, Integer> ex3_pedidosPorCliente(Connection conn) throws SQLException {
@@ -84,7 +141,21 @@ public class ConsultasSQL {
         // Agrupa per client i
         // compta quantes comandes ('comandes') té cadascun (fins i tot 0).
         // — Desa tot iterant el ResultSet en un Map<String, Integer> i retorna'l.
-        throw new UnsupportedOperationException("TODO");
+        Map<String, Integer> pedidosPorCliente = new HashMap<>();
+        String sql = "SELECT c.nom, COALESCE(COUNT(o.id), 0) AS num_pedidos "
+                   + "FROM clients c LEFT JOIN comandes o ON c.id = o.client_id "
+                   + "GROUP BY c.nom";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String nombreCliente = rs.getString("nom");
+                    int numPedidos = rs.getInt("num_pedidos");
+                    pedidosPorCliente.put(nombreCliente, numPedidos);
+                }
+                return pedidosPorCliente;
+            }
+        }
+       // throw new UnsupportedOperationException("TODO");
     }
 
     public static double ex3_totalFacturadoCliente(Connection conn, String nombreCliente) throws SQLException {
@@ -96,17 +167,44 @@ public class ConsultasSQL {
         // — Filtra per nom de client i on l'estat sigui = 'LLIURAT'.
         // — Calcula la suma total multiplicant (quantitat * preu_unitari).
         // — Retorna el resultat llegit del ResultSet (0.0 si no n'hi ha).
-        throw new UnsupportedOperationException("TODO");
+        Double totalFacturado;
+        String sql ="SELECT COALESCE(SUM(lc.quantitat * lc.preu_unitari), 0.0) AS TotalFacturat FROM comandes o " +
+                "LEFT JOIN clients c ON o.client_id = c.id LEFT JOIN linies_comanda lc ON o.id = lc.comanda_id " +
+                "WHERE c.nom = ? AND o.estat = 'LLIURAT'";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            ps.setString(1, nombreCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    totalFacturado = rs.getDouble("TotalFacturat");
+                } else {
+                    totalFacturado = 0.0;
+                }
+            }
+        }
+        return totalFacturado;
+        //throw new UnsupportedOperationException("TODO");
     }
 
     public static Map<String, Double> ex4_precioMedioPorCategoria(Connection conn) throws SQLException {
+        Map<String, Double> precioMedio= new HashMap<>();
+        String sql= "SELECT categoria, ROUND(AVG(preu), 2) AS precio_medio FROM productes GROUP BY categoria";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String categoria = rs.getString("categoria");
+                    Double precioMedioCategoria = rs.getDouble("precio_medio");
+                    precioMedio.put(categoria, precioMedioCategoria);
+                }
+                return precioMedio;
+            }
+        }
         // [ES] TODO — Haz un GROUP BY de 'categoria' en la tabla 'productes'.
         // — Calcula el precio medio (AVG) redondeado a 2 decimales (ROUND).
         // — Devuélvelo en un Map<Categoria, PrecioMedio>.
         // [CAT] TODO — Fes un GROUP BY de 'categoria' a la taula 'productes'.
         // — Calcula el preu mitjà (AVG) arrodonit a 2 decimals (ROUND).
         // — Retorna-ho en un Map<Categoria, PrecioMedio>.
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
     }
 
     public static List<String> ex4_categoriasConMasDeNProductos(Connection conn, int minim) throws SQLException {
@@ -116,16 +214,39 @@ public class ConsultasSQL {
         // [CAT] TODO — Selecciona 'categoria' agrupant-la i deixa només les que tinguin
         // COUNT(*) > ?.
         // — Retorna la llista d'aquestes categories.
-        throw new UnsupportedOperationException("TODO");
+        List<String> categoriasConMasProductos = new ArrayList<>();
+        String sql= "SELECT categoria FROM productes GROUP BY CATEGORIA HAVING COUNT(*) > ?";
+        try(PreparedStatement ps = conn.prepareStatement(sql);) {
+            ps.setInt(1, minim);
+            try(ResultSet rs = ps.executeQuery()) {
+                while(rs.next()) {
+                    categoriasConMasProductos.add(rs.getString("categoria"));
+                }
+                return categoriasConMasProductos;
+            }
+        }
+
+        //throw new UnsupportedOperationException("TODO");
     }
 
     public static List<String> ex5_productosNoDemandados(Connection conn) throws SQLException {
+        List<String> productosNoDemandados = new ArrayList<>();
+        String sql= "SELECT p.nom FROM productes p WHERE p.id NOT IN (SELECT DISTINCT lc.producte_id FROM linies_comanda lc" +
+                " WHERE lc.producte_id IS NOT NULL)";
+        try(PreparedStatement ps= conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+                while(rs.next()) {
+                    productosNoDemandados.add(rs.getString("nombre"));
+                }
+                return productosNoDemandados;
+            }
+
         // [ES] TODO — Selecciona los nombres de productos cuyo id NO esté (NOT IN)
         // en la tabla de líneas de pedido (linies_comanda).
         // [CAT] TODO — Selecciona els noms de productes l'id dels quals NO estigui (NOT
         // IN)
         // a la taula de línies de comanda (linies_comanda).
-        throw new UnsupportedOperationException("TODO");
+        //throw new UnsupportedOperationException("TODO");
     }
 
     public static Map<String, String> ex5_empleadoConJefe(Connection conn) throws SQLException {
@@ -137,6 +258,19 @@ public class ConsultasSQL {
         // del cap.
         // — Si no té cap, retorna "Sense cap" usant COALESCE.
         // — Retorna el resultat en un Map<String, String>.
-        throw new UnsupportedOperationException("TODO");
+        Map<String, String> empleadoConJefe = new HashMap<>();
+        String sql = "SELECT e.nom AS empleado, COALESCE(c.nom, 'Sense cap') AS jefe " +
+                     "FROM empleats e LEFT JOIN empleats c ON e.cap_id = c.id";
+        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String empleado = rs.getString("empleado");
+                    String jefe = rs.getString("jefe");
+                    empleadoConJefe.put(empleado, jefe);
+                }
+                return empleadoConJefe;
+            }
+        }
+       // throw new UnsupportedOperationException("TODO");
     }
 }
