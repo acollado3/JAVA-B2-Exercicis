@@ -1,7 +1,10 @@
 package edu.uoc.b2.tema4.ex03;
 
+import com.mysql.cj.jdbc.interceptors.ServerStatusDiffInterceptor;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -50,7 +53,50 @@ public class TraspasoBancario {
         // 5. Si tot ha anat bé, fer commit().
         // 6. Usar catch o finally per fer rollback() si ha saltat un error.
         // 7. Tornar a activar autoCommit (true) en acabar.
+       try {
+           conn.setAutoCommit(false);
+           PreparedStatement treure = conn.prepareStatement("UPDATE cuentas SET saldo = saldo - ? WHERE id = ?");
+           treure.setDouble(1, cantidad);
+           treure.setInt(2, origenId);
+           treure.executeUpdate();
 
-        throw new UnsupportedOperationException("TODO");
+
+           PreparedStatement posar = conn.prepareStatement("UPDATE cuentas SET saldo = saldo + ? WHERE id= ?");
+           posar.setDouble(1, cantidad);
+           posar.setInt(2, destinoId);
+           posar.executeUpdate();
+
+           PreparedStatement comprovaSaldo = conn.prepareStatement("SELECT saldo FROM cuentas WHERE id = ?");
+           comprovaSaldo.setInt(1, origenId);
+           ResultSet rs = comprovaSaldo.executeQuery();
+           rs.next();
+               if (rs.getDouble("saldo") < 0) {
+               System.out.println("Saldo insuficiente!!");
+               throw new SQLException("Saldo insuficient!!");
+           }
+
+           conn.commit();
+       }
+       catch (SQLException e)
+            {
+              conn.rollback();
+                   throw new SQLException("Error en el traspaso: " + e.getMessage());
+           }
+
+
+
+       finally
+        {
+           if(conn!=null)
+           {
+               try {
+                   conn.setAutoCommit(true);
+
+               }
+               catch (SQLException e) {}
+           }
+        }
+
+        //throw new UnsupportedOperationException("TODO");
     }
 }
