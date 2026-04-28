@@ -1,4 +1,4 @@
-﻿package edu.uoc.b2.tema6.ex01;
+package edu.uoc.b2.tema6.ex01;
 
 /**
  * ============================================================
@@ -28,7 +28,8 @@ public class CalculadoraSegura {
     public static int sumar(int a, int b) {
         // [ES] TODO — devuelve a + b (¡sencillo!)
         // [CAT] TODO — retorna a + b (senzill!)
-        throw new UnsupportedOperationException("TODO");
+        return a+b;
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -46,7 +47,11 @@ public class CalculadoraSegura {
         // [CAT] TODO — comprova divisor == 0 → throw new ArithmeticException(...)
         // Pista: String.format("División por cero / Divisió per zero: %.1f / 0",
         // dividendo)
-        throw new UnsupportedOperationException("TODO");
+        if (divisor==0) throw new ArithmeticException(String.format("División por cero: %.1f / 0", dividendo));
+
+         return dividendo/divisor;
+
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -63,7 +68,9 @@ public class CalculadoraSegura {
         // [ES] TODO — comprueba n < 0 → throw new IllegalArgumentException(...)
         // [CAT] TODO — comprova n < 0 → throw new IllegalArgumentException(...)
         // Pista: Math.sqrt(n)
-        throw new UnsupportedOperationException("TODO");
+        if(n<0) throw new IllegalArgumentException(String.format("No se puede calcular la raíz cuadrada de un número negativo: %.1f", n));
+        return Math.sqrt(n);
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -84,7 +91,11 @@ public class CalculadoraSegura {
         // 2. Comprova n > 20 → ArithmeticException
         // 3. Cas base: n == 0 o n == 1 → retorna 1
         // 4. Cas recursiu: retorna n * factorial(n - 1)
-        throw new UnsupportedOperationException("TODO");
+        if(n<0) throw new IllegalArgumentException(String.format("No es pot calcular el factorial d'un nombre negatiu: %d", n));
+        if(n>20) throw new ArithmeticException(String.format("El factorial de %d desbordaría un long", n));
+        if(n==0 || n==1) return 1;
+        return n*factorial(n-1);
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -107,6 +118,16 @@ public class CalculadoraSegura {
         // try-catch(NumberFormatException)
         // i rellança com: throw new IllegalArgumentException("Format de nombre invàlid:
         // '" + text + "'", e)
-        throw new UnsupportedOperationException("TODO");
+        try
+        {
+            int sencer = Integer.parseInt(text);
+            return sencer;
+        }
+        catch (NumberFormatException e)
+        {
+            throw new IllegalArgumentException(String.format("Formato de número inválido: '%s'", text), e);
+        }
+
+        //throw new UnsupportedOperationException("TODO");
     }
 }
