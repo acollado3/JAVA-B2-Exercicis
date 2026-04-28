@@ -1,5 +1,7 @@
 package edu.uoc.b2.tema6.ex02;
 
+
+
 /**
  * ============================================================
  * EXERCICI 02 Excepcions / Excepciones — Custom exception wrapping ⭐⭐⭐
@@ -44,7 +46,32 @@ public class ValidadorUsuario {
         // causa).
         // 4. Si edad < 18, també tira UsuarioInvalidoException.
         // 5. Retorna l'edat extreta.
+        try
+        {
+            if(infoUsuario==null || infoUsuario.isEmpty())
+            {
+                throw new UsuarioInvalidoException("Usuario inválido por cadena vacía");
+            }
+            String[] array=infoUsuario.split(",");
+            if(array.length!=2)
+            {
+                throw new UsuarioInvalidoException("Usuario inválido por formato incorrecto");
+            }
+            int edad=Integer.parseInt(array[1]);
+            if(edad<18)
+            {
+                throw new UsuarioInvalidoException("Usuario inválido por edad menor de 18");
+            }
+            return edad;
 
-        throw new UnsupportedOperationException("TODO");
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new UsuarioInvalidoException("Edad inválida", ex);
+        }
+
+
+       // throw new UnsupportedOperationException("TODO");
+
     }
 }
