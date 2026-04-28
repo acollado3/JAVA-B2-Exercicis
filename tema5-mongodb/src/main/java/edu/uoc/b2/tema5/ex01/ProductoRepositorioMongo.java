@@ -1,12 +1,17 @@
 package edu.uoc.b2.tema5.ex01;
 
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.*;
+import com.mongodb.client.result.InsertOneResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.mongodb.client.model.Filters.*;
 
 /**
  * ============================================================
@@ -29,12 +34,21 @@ public class ProductoRepositorioMongo {
 
     private final MongoCollection<Document> col;
 
+
+
     public ProductoRepositorioMongo(MongoDatabase db) {
         // [ES] TODO — Obtén la colección "productos" de la base de datos 'db'.
         // [CAT] TODO — Obtén la col·lecció "productos" de la base de dades 'db'.
         // Además / A més: createIndex para: Indexes.text("nombre") y
         // Indexes.ascending("categoria", "precio")
-        throw new UnsupportedOperationException("TODO");
+       String uri = "mongodb://localhost:27017";
+        MongoClient mongoClient = com.mongodb.client.MongoClients.create(uri);
+        MongoDatabase database = mongoClient.getDatabase("test_bdd");
+        this.col = database.getCollection("productos");
+        col.createIndex(new Document("nombre", "text"));
+        col.createIndex(new Document("categoria", 1).append("precio", 1));
+
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -52,8 +66,23 @@ public class ProductoRepositorioMongo {
         // Crea un nou Document() i afegeix-li (append) aquests valors + "activo"=true +
         // "creado"=new Date()
         // Insereix el document a la col·lecció i retorna l'ObjectId generat.
-        throw new UnsupportedOperationException("TODO");
-    }
+        if (nombre == null || nombre.isEmpty()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacío");}
+            if(precio<=0){throw new IllegalArgumentException("El precio debe ser mayor que 0");}
+            if(stock<0){throw new IllegalArgumentException("El stock no puede ser negativo");}
+            Document doc = new Document("nombre", nombre)
+                    .append("categoria", categoria)
+                    .append("precio", precio)
+                    .append("stock", stock)
+                    .append("activo", true)
+                    .append("creado", new java.util.Date());
+
+            InsertOneResult result = col.insertOne(doc);
+            return result.getInsertedId().asObjectId().getValue();
+            }
+
+        //throw new UnsupportedOperationException("TODO");
+
 
     /**
      * [CAT] Cerca aplicant "text search" (cerca textual pel nom).
@@ -67,7 +96,13 @@ public class ProductoRepositorioMongo {
         // [CAT] TODO — Usa col.find(Filters.text(...)) per retornar la llista de
         // documents que coincideixin amb el text
         // (usa l'índex de tipus text). I extreu (into) a un nou ArrayList<Document>.
-        throw new UnsupportedOperationException("TODO");
+        return col.find(Filters.text(textBusqueda))
+                .into(new ArrayList<>());
+
+
+
+
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -80,7 +115,15 @@ public class ProductoRepositorioMongo {
         // 10).
         // [CAT] TODO — Retorna una llista de Document. Filtra per (eq("activo", true)).
         // Ordena ascendent pel camp indicat. Skip i limit manual (mínim mida 10).
-        throw new UnsupportedOperationException("TODO");
+        int limit = Math.max(tamañoPagina, 10);
+        int skip = (pagina - 1) * limit;
+
+        return col.find(eq("activo", true)) // Filtre booleà
+                .sort(Sorts.ascending(ordenarPorCampo))
+                .skip(skip)
+                .limit(limit)
+                .into(new ArrayList<>());
+       // throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -94,7 +137,18 @@ public class ProductoRepositorioMongo {
         // [CAT] TODO — Si nuevoPrecio <= 0 llança excepció.
         // Aplica un updateOne amb SET 'precio' = nuevoPrecio. Retorna true si
         // modifiedCount > 0.
-        throw new UnsupportedOperationException("TODO");
+        if (nuevoPrecio <= 0) {
+            throw new IllegalArgumentException("El precio debe ser mayor que 0");
+        }
+
+        UpdateResult result = col.updateOne(
+                eq("_id", id),
+                Updates.set("precio", nuevoPrecio)
+        );
+
+        return result.getModifiedCount() > 0;
+
+        //throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -113,6 +167,27 @@ public class ProductoRepositorioMongo {
         // 2. Group / agrupa per "$categoria", suma (count) el nº productes i promig
         // (avg) de "$precio"
         // 3. Retorna un Map on Key = categoria, i Value = Map intern amb els valors.
-        throw new UnsupportedOperationException("TODO");
+        List<org.bson.conversions.Bson> pipeline = Arrays.asList(
+                // 1. Filtrem productes actius
+                Aggregates.match(eq("activo", true)),
+                // 2. Agrupem per categoria i calculem compte i mitjana
+                Aggregates.group("$categoria",
+                        Accumulators.sum("cantidad", 1),
+                        Accumulators.avg("precioPromedio", "$precio"))
+        );
+
+        Map<String, Object> resultadoFinal = new HashMap<>();
+
+        col.aggregate(pipeline).forEach(doc -> {
+            String categoria = doc.getString("_id"); // L'ID del grup és la categoria
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("cantidad", doc.get("cantidad"));
+            stats.put("precioPromedio", doc.get("precioPromedio"));
+
+            resultadoFinal.put(categoria != null ? categoria : "Sin Categoria", stats);
+        });
+
+        return resultadoFinal;
+        //throw new UnsupportedOperationException("TODO");
     }
 }
